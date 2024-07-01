@@ -55,7 +55,7 @@ router.patch('/:id',uploadNone.none(),async(req,res,next)=>{
     } catch (error) {
       next(error)
     }
-  })
+})
   router.delete('/:id',async(req,res,next)=>{
     const { id } = req.params
     try{
@@ -64,6 +64,6 @@ router.patch('/:id',uploadNone.none(),async(req,res,next)=>{
     }catch(error){
         next(error)
     }
-  })
+})
 
 module.exports=router;

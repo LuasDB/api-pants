@@ -31,3 +31,5 @@ app.use('/uploads',express.static("uploads"));
 app.listen(port,()=>{
     console.log(`Servidor ejecutado por el puerto ${port}`)
 })
+
+

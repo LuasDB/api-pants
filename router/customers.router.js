@@ -32,7 +32,7 @@ router.get('/:id',async(req,res,next)=>{
 })
 router.post('/',uploadNone.none(),async(req,res,next)=>{
     try{
-        let data = req.body;        
+        let data = req.body;
         console.log('[Prueba de llegada]',data);
         let newCustomer = await customer.create(data);
         res.status(201).json(newCustomer);
@@ -40,9 +40,9 @@ router.post('/',uploadNone.none(),async(req,res,next)=>{
         next(error)
     }
 })
-router.post('/:id',uploadNone.none(),async(req,res,next)=>{
+router.patch('/:id',uploadNone.none(),async(req,res,next)=>{
     const { id }=req.params
-    const { body } = req 
+    const { body } = req
     try{
         const update = await customer.update(id,body);
         res.status(200).json(update);
