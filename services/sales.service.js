@@ -14,7 +14,7 @@ class Sale{
       //Verificamos que la nota exista
       const folio = data.folio
       const cliente = await db.collection('clientes').doc(data.cliente).get()
-      data['cliente']=cliente.data()
+      data['clienteData']=cliente.data()
       data['pays']=[]
       data['adeudo']=data.total
 
@@ -73,6 +73,7 @@ class Sale{
 
       }
     }
+
 }
 
 
