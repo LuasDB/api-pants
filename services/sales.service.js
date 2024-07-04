@@ -39,7 +39,7 @@ class Sale{
         return { success:true, data:data}
       } catch (error) {
         console.log('[ERROR]:',error)
-        return { success: false,message:'Algo salio mal al consultar la base de datos'}
+        return { success: false,message:`Algo salio mal al consultar la base de datos: ${error}`}
       }
     }
     async getOne(id){
