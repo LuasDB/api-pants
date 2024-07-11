@@ -22,7 +22,6 @@ async getAll(){
 }
 async getOne(id){
     const getUser = await db.collection(this.collection).doc(id).get();
-
     if(!getUser.exists){
       return { success:false,message:'No encontrado'}
     }
