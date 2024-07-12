@@ -11,8 +11,7 @@ class Report{
         try{
             const resDb = await db.collection(this.collection).where('cliente','==',id).get()
             const data = resDb.docs.map(item=>({id:item.id, ...item.data()}))
-            const filtro = data.filter(item=>{
-                
+            const filtro = data.filter(item=>{                
             const itemDate = new Date(item.fecha);
             return itemDate >= fechaInicial && itemDate <= fechaFinal;
             })

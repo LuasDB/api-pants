@@ -12,9 +12,10 @@ const report = new Report();
 //Ruta para la funcion Reporte
 router.get('/:id',async(req,res)=>{
     //se destructura el id de los parametros
+    
     const {id} = req.params;
     //se destructura starDate y endDate de la consulta en la url
-    const {starDate,endDate} = req.query;
+    const {starDate,endDate} = req.body;
     //Se convierte la fecha inicial en un date asignandole una variable de fecha Inicial
     const fechaInicial = new Date(starDate)
     //De igualmanera se convierte en fecha el endDate y se le asigna la varialbe fechdFinal
@@ -32,7 +33,7 @@ router.get('/:id',async(req,res)=>{
     }
 })
 router.get('/',async(req,res)=>{
-    const {starDate, endDate} = req.query
+    const {starDate, endDate} = req.body
     const fechaInicial = new Date(starDate);
     const fechaFinal = new Date(endDate);
     console.log(fechaInicial,fechaFinal);
