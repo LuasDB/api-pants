@@ -11,10 +11,15 @@ const uploadNone = multer();
 const report = new Report();
 //Ruta para la funcion Reporte
 router.get('/:id',async(req,res)=>{
+    //se destructura el id de los parametros
     const {id} = req.params;
+    //se destructura starDate y endDate de la consulta en la url
     const {starDate,endDate} = req.query;
+    //Se convierte la fecha inicial en un date asignandole una variable de fecha Inicial
     const fechaInicial = new Date(starDate)
+    //De igualmanera se convierte en fecha el endDate y se le asigna la varialbe fechdFinal
     const fechaFinal = new Date(endDate);
+    //Verificamos que este generando correctamente la consulta
     console.log(starDate, endDate);
     if(!starDate || !endDate){
         return res.status(400).send('Por favor proporciona ambos rangos de fecha starDate y endDate');
@@ -25,5 +30,21 @@ router.get('/:id',async(req,res)=>{
     }else{
         res.status(500).json(getAllId);
     }
+})
+router.get('/',async(req,res)=>{
+    const {starDate, endDate} = req.query
+    const fechaInicial = new Date(starDate);
+    const fechaFinal = new Date(endDate);
+    console.log(fechaInicial,fechaFinal);
+    if(!fechaInicial || !fechaFinal){
+        return res.status(400).send('Por favor proporciona ambos rangos de fecha starDate y endDate');
+    }
+    const getAllDate = await report.getAllDate(fechaInicial,fechaFinal);
+    if(getAllDate){
+        res.status(200).json(getAllDate);
+    }else{
+        res.status(500).json(getAllDate);
+    }
+
 })
 module.exports = router;

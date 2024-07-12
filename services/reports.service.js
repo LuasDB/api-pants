@@ -11,12 +11,19 @@ class Report{
         try{
             const resDb = await db.collection(this.collection).where('cliente','==',id).get()
             const data = resDb.docs.map(item=>({id:item.id, ...item.data()}))
-            
-             return {success:true,data:data.filter(item=>{
-                const itemDate = new Date(item.fecha);
-                return itemDate >= fechaInicial && itemDate <= fechaFinal;
+            const filtro = data.filter(item=>{
+                
+            const itemDate = new Date(item.fecha);
+            return itemDate >= fechaInicial && itemDate <= fechaFinal;
             })
-            }
+            if (filtro.length === 0){                
+                return {
+                    success:false,message:`No hay registros en el rango de fechas  ${fechaInicial} y ${fechaFinal}`
+                }
+            }else{
+                return {success:true,filtro            
+                }
+            }            
         }catch(error){
             console.log('[error]:', error)
             return{
@@ -25,6 +32,30 @@ class Report{
             }
         }
     }
+    async getAllDate(fechaInicial,fechaFinal){
+        try{
+            const resDb = await db.collection(this.collection).get()
+            const data = resDb.docs.map(item=>({id:item.id,...item.data()}))
+            const filtro = data.filter(item=>{
+                const itemDate = new Date(item.fecha)
+                return itemDate >= fechaInicial && itemDate <= fechaFinal
+            })
+            if (filtro.length === 0){
+                return{success:false,message:`No se encontraron registros en el rango de fechas ${fechaInicial} y ${fechaFinal}`}
+            }else{
+                return{
+                    success:true,filtro
+                }
+            }
+        }catch(error){
+            return{
+                success:false,
+                message:`Algo salio mal en el proceso ${error}`
+                
+            }
+        }
+    }
+
     
 }
 module.exports = Report;
