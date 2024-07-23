@@ -7,6 +7,7 @@ const customersRouter=require("./customers.router.js");
 const salesRouter =require("./sales.router.js");
 const paymentsRouter =require("./payments.router.js");
 const reportsRouter = require("./report.router.js");
+const sallersRouter = require("./sallers.router.js");
 
 //const pantsRouter = require("./panst.router.js")
 
@@ -19,5 +20,6 @@ function routerApi(app){
     router.use('/sales',salesRouter);
     router.use('/payments',paymentsRouter);
     router.use('/reports',reportsRouter);
+    router.use('/sallers',sallersRouter);
 }
 module.exports=routerApi;
