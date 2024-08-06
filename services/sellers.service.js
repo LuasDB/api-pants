@@ -1,13 +1,13 @@
 //Importacion de la Base de firestore
-const{experimentalSetDeliveryMetricsExportedToBigQueryEnabled} = require('firebase/messaging/sw');
 const {db} = require('../db/firebase.js');
 
 //definicion de la clase con varios objetos
-class Saller{
+class Seller{
     constructor(){
-        this.collection = 'sallers'
+        this.collection = 'sellers'
     }
     async getAll(){
+        console.log('todos1')
         const getSallers = await db.collection(this.collection).where('status','==','Activo').get();
         const sallers = getSallers.docs.map(item => ({id:item.id,...item.data()}));
         return{
@@ -52,7 +52,7 @@ class Saller{
         await this.updateOne(id,{status:'Baja'})
         return{success:true,message:'Eliminado con éxicot'}
     }
-    
+
 
 }
-module.exports = Saller;
+module.exports = Seller;

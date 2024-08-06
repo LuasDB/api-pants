@@ -14,7 +14,9 @@ class Sale{
       //Verificamos que la nota exista
       const folio = data.folio
       const cliente = await db.collection('clientes').doc(data.cliente).get()
+      const vendedor = await db.collection('sellers').doc(data.vendedor).get()
       data['clienteData']=cliente.data()
+      data['vendedorData']=vendedor.data()
       data['pays']=[]
       data['adeudo']=data.total
 
@@ -65,6 +67,19 @@ class Sale{
       } catch (error) {
         return { success:false, message:' Algo salio mal al consultar la base de datos'}
       }
+    }
+    async updateOneSeller(id,idSeller){
+      const vendedor = await db.collection('sellers').doc(idSeller).get()
+       await this.updateOne(id,{
+        vendedor:idSeller,
+        vendedorData:vendedor.data()
+      })
+      return {success:true, message:'Actualizado'}
+
+
+
+
+
     }
     async deleteOne(id){
       try {

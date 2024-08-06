@@ -57,6 +57,19 @@ router.patch('/:id',uploadNone.none(),async(req,res,next)=>{
 
 
 })
+router.patch('/add-seller/:id/:seller',uploadNone.none(),async(req,res,next)=>{
+  const { id,seller}=req.params
+
+
+      const update = await sale.updateOneSeller(id,seller);
+      if(update.success){
+        res.status(200).json(update);
+      }else{
+        res.status(500).json(update)
+      }
+
+
+})
 router.delete('/:id',async(req,res,next)=>{
     const { id } = req.paramsd
     try{

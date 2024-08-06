@@ -10,19 +10,20 @@ const uploadNone = multer();
 //Crea nueva instancia de la clase Report
 const report = new Report();
 //Ruta para la funcion Reporte
-router.get('/:id',async(req,res)=>{
+router.post('/:id',async(req,res)=>{
     //se destructura el id de los parametros
-    
+    console.log('ENDPOINT REPORTS')
+
     const {id} = req.params;
     //se destructura starDate y endDate de la consulta en la url
-    const {starDate,endDate} = req.body;
+    const {startDate,endDate} = req.body;
     //Se convierte la fecha inicial en un date asignandole una variable de fecha Inicial
-    const fechaInicial = new Date(starDate)
+    const fechaInicial = new Date(startDate)
     //De igualmanera se convierte en fecha el endDate y se le asigna la varialbe fechdFinal
     const fechaFinal = new Date(endDate);
     //Verificamos que este generando correctamente la consulta
-    console.log(starDate, endDate);
-    if(!starDate || !endDate){
+    console.log(startDate, endDate);
+    if(!startDate || !endDate){
         return res.status(400).send('Por favor proporciona ambos rangos de fecha starDate y endDate');
     }
     const getAllId = await report.getAllId(id,fechaInicial,fechaFinal);
