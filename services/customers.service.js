@@ -1,6 +1,6 @@
 //importacion de la base de datos
 const { experimentalSetDeliveryMetricsExportedToBigQueryEnabled } = require('firebase/messaging/sw');
-//base de datos 
+//base de datos
 const { db } = require('../db/firebase.js');
 const { and } = require('firebase/firestore');
 //definicion de la clase
@@ -32,14 +32,14 @@ class Customer {
     }
 
     async create(data){
-        console.log('llega',data)        
+        console.log('llega',data)
         const addNewCustomer =  await db.collection(this.collection).add(data);
         console.log(addNewCustomer);
         if(addNewCustomer.id){
             return{
                 data:{
                     ...data,
-                    id:addNewCustomer.id                
+                    id:addNewCustomer.id
                 },
                 success:true,
                 message:'Cliente creado con éxito'
@@ -48,7 +48,7 @@ class Customer {
     }
     async update(id,newData){
         const update = await db.collection(this.collection).doc(id).update(newData);
-        console.log(update)
+
         return{
             success:true,
             message:'Actualizado',
@@ -62,7 +62,7 @@ class Customer {
             message:'Eliminado'
         }
     }
-    // async createObject(){        
+    // async createObject(){
     //     const obj = {
     //         array:[{a:56,b:9},{a:56,b:9},{a:56,b:9}],
     //         sting:"Esto es un string",

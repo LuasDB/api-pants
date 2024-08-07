@@ -88,6 +88,37 @@ class Auth{
 
     }
   }
+  async getAll(){
+    console.log('entramos a la clase')
+    const usersQuery = await db.collection(this.collection).where('status','==','Activo').get()
+    const users = usersQuery.docs.map(item=>({id:item.id,...item.data()}))
+    console.log(users)
+
+    return {success:true,status:200,data:users }
+
+  }
+  async getOne(id){
+
+    const userQuery = await db.collection(this.collection).doc(id).get()
+    if(!userQuery.exists){
+      return {success:false,status:404,message:'No encontrado'}
+    }
+    const {password, ...data} = userQuery.data()
+
+    return {success:true,status:200,data }
+
+  }
+  async updateOne(id,newData){
+
+    try {
+      await db.collection(this.collection).doc(id).update(newData)
+      return { success:true, message:'Actualizació correcta',status:201}
+    } catch (error) {
+      return { success:false, message:'No se puede actualizar',status:501}
+
+    }
+  }
+
 
 
 

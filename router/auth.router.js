@@ -43,4 +43,35 @@ router.post('/register',uploadNone.none(),async(req,res)=>{
   }
 })
 
+router.get('/users',async(req,res)=>{
+  try {
+    const users = await auth.getAll();
+    res.status(users.status).json(users)
+  } catch (error) {
+    res.status(500).json({success:false, error})
+  }
+})
+
+router.get('/users/:id',async(req,res)=>{
+  const { id } = req.params
+  try {
+    const users = await auth.getOne(id);
+    res.status(users.status).json(users)
+  } catch (error) {
+    res.status(500).json({success:false, error})
+  }
+})
+
+router.patch('/users/:id',uploadNone.none(),async(req,res)=>{
+  const { id } = req.params
+
+  try {
+    const user = await auth.updateOne(id,req.body);
+    res.status(user.status).json(user)
+  } catch (error) {
+    res.status(500).json({success:false, error})
+  }
+})
+
+
 module.exports = router
