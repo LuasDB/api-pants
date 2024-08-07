@@ -77,7 +77,7 @@ class Auth {
       }
 
       // Generar token JWT
-      const token = jwt.sign({ userId: userDoc.id, email: user.email }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ userId: userDoc.id, user}, process.env.JWT_SECRET, {
         expiresIn: '1d',
       });
 
