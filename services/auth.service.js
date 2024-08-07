@@ -64,9 +64,7 @@ class Auth{
     try {
 
       const userSnapshot = await db.collection(this.collection).where('email', '==', email).get();
-      if (!userSnapshot.empty) {
-        return { success:false, status:401, message:'Credenciales invalidas ',data:{email,password}}
-      }
+
        // Obtener el usuario
        const userDoc = userSnapshot.docs[0];
        const user = userDoc.data();
