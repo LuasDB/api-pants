@@ -4,7 +4,15 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-
+const transporter = nodemailer.createTransport({
+  host: 'mail.samar-technologies.com',
+  port: 465,
+  secure: true, // true para port 465, false para otros puertos
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 class Auth {
   constructor() {
@@ -48,14 +56,7 @@ class Auth {
       // Enlace de restablecimiento de contraseña
       const resetLink = `${process.env.CLIENT_URL}reset-password?token=${resetToken}`;
 
-      // Configurar transporte de Nodemailer
-      let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
+
       const htmlToSend =`
       <!DOCTYPE html>
       <html lang="en">
@@ -249,14 +250,7 @@ class Auth {
     const resetLink = `${process.env.CLIENT_URL}reset-password?token=${resetToken}`;
     console.log(resetLink)
 
-    // Configurar transporte de Nodemailer
-    let transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+
     const htmlToSend =`
     <!DOCTYPE html>
     <html lang="en">
