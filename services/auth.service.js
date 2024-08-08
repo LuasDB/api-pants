@@ -264,34 +264,26 @@ class Auth {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-            .button {
-                display: inline-block;
-                padding: 10px 20px;
-                font-size: 16px;
-                color: #ffff;
-                background-color: #007BFF;
-                text-decoration: none;
-                border-radius: 5px;
-            }
+
             .container {
-                font-family: Arial, sans-serif;
+
+            }
+            .header {
+
+            }
+        </style>
+    </head>
+    <body>
+        <div  style=" font-family: Arial, sans-serif;
                 line-height: 1.6;
                 max-width: 600px;
                 margin: auto;
                 padding: 20px;
                 border: 1px solid #ddd;
                 border-radius: 5px;
-                background-color: #f9f9f9;
-            }
-            .header {
-                font-size: 24px;
-                margin-bottom: 20px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">Restablecimiento de Contraseña</div>
+                background-color: #f9f9f9;">
+            <div style=" font-size: 24px;
+                margin-bottom: 20px;">Restablecimiento de Contraseña</div>
             <p>Hola ${user.nombre},</p>
             <p>Has solicitado un reestablecimiento de contraseña. Por favor, restablece tu contraseña usando el siguiente enlace:</p>
             <p><a href="${resetLink}" style="display: inline-block;
