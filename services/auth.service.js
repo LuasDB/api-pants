@@ -1,7 +1,10 @@
 const { db } = require('./../db/firebase');
+const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+
+
 
 class Auth {
   constructor() {
@@ -9,10 +12,10 @@ class Auth {
   }
 
   async create(data) {
-    const { nombre, tipoUsuario, email, password } = data;
+    const { nombre, tipoUsuario, email } = data;
 
     // Validación de datos
-    if (!nombre || !tipoUsuario || !email || !password) {
+    if (!nombre || !tipoUsuario || !email ) {
       throw new Error('Todos los campos son requeridos');
     }
 
@@ -24,27 +27,104 @@ class Auth {
         return { success: false, status: 409, message: 'El usuario ya existe' };
       }
 
-      // Encriptar la contraseña
-      const hashedPassword = await bcrypt.hash(password, 10);
+
 
       // Guardar el nuevo usuario en Firestore
       const newUser = {
         nombre,
         tipoUsuario,
         email,
-        password: hashedPassword,
         createdAt: new Date().toISOString(),
         status: 'Activo',
       };
 
       const userRef = await db.collection(this.collection).add(newUser);
 
-      // Generar token JWT
-      const token = jwt.sign({ userId: userRef.id, email: email }, process.env.JWT_SECRET, {
-        expiresIn: '1d',
+      // Generar token JWT para restablecimiento de contraseña
+      const resetToken = jwt.sign({ userId: userRef.id, email: email }, process.env.JWT_SECRET, {
+        expiresIn: '1h', // El token expira en 1 hora
       });
 
-      return { success: true, status: 201, message: 'El usuario se creó correctamente', data: { token } };
+      // Enlace de restablecimiento de contraseña
+      const resetLink = `${process.env.CLIENT_URL}reset-password?token=${resetToken}`;
+
+      // Configurar transporte de Nodemailer
+      let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+      const htmlToSend =`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+              .button {
+                  display: inline-block;
+                  padding: 10px 20px;
+                  font-size: 16px;
+                  color: #fff;
+                  background-color: #007BFF;
+                  text-decoration: none;
+                  border-radius: 5px;
+              }
+              .container {
+                  font-family: Arial, sans-serif;
+                  line-height: 1.6;
+                  max-width: 600px;
+                  margin: auto;
+                  padding: 20px;
+                  border: 1px solid #ddd;
+                  border-radius: 5px;
+                  background-color: #f9f9f9;
+              }
+              .header {
+                  font-size: 24px;
+                  margin-bottom: 20px;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="container">
+              <div class="header">Establecer Contraseña</div>
+              <p>Hola ${nombre},</p>
+              <p>Te has registrado exitosamente. Por favor, restablece tu contraseña usando el siguiente enlace:</p>
+              <p><a href="${resetLink}" style="display: inline-block;
+                padding: 10px 20px;
+                font-size: 16px;
+                color: #ffff;
+                background-color: #007BFF;
+                text-decoration: none;
+                border-radius: 5px;">Restablecer Contraseña</a></p>
+              <p>Saludos,<br>Equipo de Soporte</p>
+          </div>
+      </body>
+      </html>
+      `
+       // Configurar el correo electrónico
+       let mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Registro en plataforma',
+        html: htmlToSend,
+        headers: {
+          'X-Priority': '1 (Highest)',
+          'X-MSMail-Priority': 'High',
+          Importance: 'High',
+        },
+          };
+
+       // Enviar el correo electrónico
+       await transporter.sendMail(mailOptions,(error, info) => {
+        console.log('[ERROR MAIL]',error)
+        console.log('[INFO MAIL]',info)
+       });
+
+      return { success: true, status: 201, message: 'El usuario se creó correctamente se le envio un correo' };
     } catch (error) {
       return { success: false, status: 500, message: 'Error al crear el usuario', error };
     }
@@ -115,10 +195,141 @@ class Auth {
   async updateOne(id, newData) {
     try {
       await db.collection(this.collection).doc(id).update(newData);
+      console.log('Se actualizo')
       return { success: true, status: 200, message: 'Actualización correcta' };
     } catch (error) {
       return { success: false, status: 500, message: 'Error al actualizar el usuario', error };
     }
+  }
+
+  async resetPassword(data){
+    const {token, newPassword} = data
+    console.log('[PASO 1]',data)
+
+    try {
+       // Verificar el token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+    console.log('[PASO 2]',decoded)
+
+
+    // Encriptar la nueva contraseña
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    console.log('[PASO 3]',hashedPassword)
+
+     const update = await this.updateOne(userId,{password:hashedPassword})
+
+    console.log(update)
+    return { success:true, status:200, message:'Contraseña actualizada'}
+
+
+    } catch (error) {
+      return { success:false, status:500, message:'Algo salio mal'}
+
+    }
+  }
+
+  async solPassword(data){
+    console.log('SE SOLICITO CAMBIO PASS',data.email)
+    // Verificar si el usuario existe
+    const userSnapshot = await db.collection(this.collection).where('email', '==', data.email).get();
+
+
+    if(userSnapshot.empty){
+      return { success:false, message:'Este correo no se encuentra registrado',status:404}
+    }
+    const user = {id:userSnapshot.docs[0].id,...userSnapshot.docs[0].data()}
+    console.log(user)
+     // Generar token JWT para restablecimiento de contraseña
+     const resetToken = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, {
+      expiresIn: '1h', // El token expira en 1 hora
+    });
+
+    // Enlace de restablecimiento de contraseña
+    const resetLink = `${process.env.CLIENT_URL}reset-password?token=${resetToken}`;
+    console.log(resetLink)
+
+    // Configurar transporte de Nodemailer
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+    const htmlToSend =`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            .button {
+                display: inline-block;
+                padding: 10px 20px;
+                font-size: 16px;
+                color: #ffff;
+                background-color: #007BFF;
+                text-decoration: none;
+                border-radius: 5px;
+            }
+            .container {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                max-width: 600px;
+                margin: auto;
+                padding: 20px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                background-color: #f9f9f9;
+            }
+            .header {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">Restablecimiento de Contraseña</div>
+            <p>Hola ${user.nombre},</p>
+            <p>Has solicitado un reestablecimiento de contraseña. Por favor, restablece tu contraseña usando el siguiente enlace:</p>
+            <p><a href="${resetLink}" style="display: inline-block;
+                padding: 10px 20px;
+                font-size: 16px;
+                color: #ffff;
+                background-color: #007BFF;
+                text-decoration: none;
+                border-radius: 5px;">Restablecer Contraseña</a></p>
+            <p>Saludos,<br>Equipo de Soporte</p>
+        </div>
+    </body>
+    </html>
+    `
+     // Configurar el correo electrónico
+     let mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: 'Solicitud de Restablecimiento de contraseña',
+      html: htmlToSend,
+      headers: {
+        'X-Priority': '1 (Highest)',
+        'X-MSMail-Priority': 'High',
+        Importance: 'High',
+      },
+        };
+
+     // Enviar el correo electrónico
+     await transporter.sendMail(mailOptions,(error, info) => {
+      console.log('[ERROR MAIL]',error)
+      console.log('[INFO MAIL]',info)
+     });
+
+    return { success: true, status: 201, message: 'Solicitud aceptada, te enviamos un correo con las instucciones' };
+
+
+
+
   }
 }
 

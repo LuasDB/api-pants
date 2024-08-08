@@ -3,6 +3,7 @@ const express = require('express');
 //Metodo router de exp
 const router = express.Router()
 const multer = require('multer');
+require('dotenv').config();
 
 //Se crea una instancia de multer para cuando no se reciben archivos
 const uploadNone = multer();
@@ -15,7 +16,7 @@ const auth = new Auth();
 
 const jwt = require('jsonwebtoken');
 
-const secretKey = 'your_secret_key';
+
 
 
 // })
@@ -52,6 +53,16 @@ router.get('/users',async(req,res)=>{
   }
 })
 
+router.post('/sol-password',async(req,res)=>{
+  try {
+    const users = await auth.solPassword(req.body);
+    console.log('RES',users)
+    res.status(users.status).json(users)
+  } catch (error) {
+    res.status(500).json({success:false, error})
+  }
+})
+
 router.get('/users/:id',async(req,res)=>{
   const { id } = req.params
   try {
@@ -73,5 +84,14 @@ router.patch('/users/:id',uploadNone.none(),async(req,res)=>{
   }
 })
 
+router.post('/reset-password',uploadNone.none(), async (req, res) => {
+
+  try {
+    const resetPass = await auth.resetPassword(req.body)
+    res.status(resetPass.status).json(resetPass);
+  } catch (error) {
+    res.status(resetPass.status).json({success:false, message:error});
+  }
+});
 
 module.exports = router
