@@ -94,4 +94,17 @@ router.post('/reset-password',uploadNone.none(), async (req, res) => {
   }
 });
 
+
+
+router.get('/prueba',uploadNone.none(),async(req,res)=>{
+
+  try {
+    const register = await auth.prueba();
+    res.status(register.status).json(register)
+
+  } catch (error) {
+    res.status(500).json({success:false, error})
+  }
+})
+
 module.exports = router

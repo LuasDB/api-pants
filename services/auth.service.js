@@ -2,7 +2,12 @@ const { db } = require('./../db/firebase');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
+
+const htmlTemplatePath = path.join(__dirname,'./../machoteCorreos.html');
+let htmlToSend = fs.readFileSync(htmlTemplatePath, 'utf8');
 
 const transporter = nodemailer.createTransport({
   host: 'mail.samar-technologies.com',
@@ -317,6 +322,36 @@ class Auth {
 
 
   }
+
+  async prueba(){
+
+    console.log(process.env.EMAIL_USER)
+    console.log(process.env.EMAIL_PASS)
+
+
+       // Configurar el correo electrónico
+     let mailOptions = {
+      from: process.env.EMAIL_USER,
+      to:'saul.delafuente@siradiacion.com.mx',
+      subject: 'Prueba de plantillas de correo',
+      html: htmlToSend,
+      headers: {
+        'X-Priority': '1 (Highest)',
+        'X-MSMail-Priority': 'High',
+        Importance: 'High',
+      },
+        };
+
+
+         // Enviar el correo electrónico
+     await transporter.sendMail(mailOptions,(error, info) => {
+      console.log('[ERROR MAIL]',error)
+      console.log('[INFO MAIL]',info)
+     });
+
+
+  }
+
 }
 
 module.exports = Auth;
