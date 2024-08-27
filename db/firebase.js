@@ -11,16 +11,5 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-
-
-// //otro mode de usar firebase
-// const admin = require('firebase-admin');
-// const firebaseConfig = require('./firebaseConf');
-
-// admin.initializeApp({
-//     credential: admin.credential.cert(firebaseConfig),
-//     databaseURL: `https://${process.env.PROJECT_ID}.firebaseio.com`
-// });
-
 const db = admin.firestore();
 module.exports = {db,server}
