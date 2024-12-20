@@ -10,6 +10,7 @@ const reportsRouter = require("./report.router.js");
 const sellersRouter = require("./sellers.router.js");
 const authRouter = require('./auth.router.js')
 const reportsSalesRouter = require('./reportsSales.router.js')
+const downloadDatabaseRouter = require('./downloadDatabase.router.js')
 
 //const pantsRouter = require("./panst.router.js")
 
@@ -25,5 +26,7 @@ function routerApi(app){
     router.use('/sellers',sellersRouter);
     router.use('/auth',authRouter)
     router.use('/reports-sales',reportsSalesRouter)
+    router.use('/download-database',downloadDatabaseRouter)
+
 }
 module.exports=routerApi;

@@ -13,24 +13,48 @@ const uploadNone = multer();
 //crea nueva instancia de la clase cliente
 const sale = new Sale();
 //rutas para la funcion.
-router.get('/',async(req,res)=>{
+router.get('/:year',async(req,res)=>{
+  const { year } = req.params
+  try {
+  const getAll= await sale.getAll(year)
 
-  const getAll= await sale.getAll()
-  if(getAll.success){
-    res.status(200).json(getAll)
-  }else{
-    res.status(500).json(getAll)
+  res.status(200).json({
+    success:true,
+    data:getAll
+  })
+
+  } catch (error) {
+    res.status(500).json({
+      success:false,
+      message:error
+    })
   }
 
+
 })
-router.get('/:id',async(req,res)=>{
-    const { id } = req.params
+router.get('/:year/:id',async(req,res,next)=>{
+    const { id,year } = req.params
     try{
-        const getOne = await sale.getOne(id);
-        res.status(200).json(getOne);
+        const getOne = await sale.getOne(id,year);
+        res.status(200).json(
+          {
+            success:true,
+            data:getOne
+          }
+        );
     }catch(error){
         next(error)
     }
+})
+router.get('/transformar/db',async(req,res)=>{
+
+  try {
+    const transformar = await sale.dbTransform()
+    res.status(200).json(transformar)
+  } catch (error) {
+    res.status(500).json(transformar)
+  }
+
 })
 router.post('/',uploadNone.none(),async(req,res,next)=>{
 
@@ -43,42 +67,56 @@ router.post('/',uploadNone.none(),async(req,res,next)=>{
         }
 
 })
-router.patch('/:id',uploadNone.none(),async(req,res,next)=>{
-    const { id }=req.params
-    const { body } = req
+router.patch('/:year/:id',uploadNone.none(),async(req,res,next)=>{
+  const { id ,year}=req.params
+  const { body } = req
+  try {
+    const update = await sale.updateOne(id,body,year);
+    res.status(200).json({
+      success:true,
+      message:'Actualizado'
+    })
+
+  } catch (error) {
+    next(error)
+  }
 
 
-        const update = await sale.updateOne(id,body);
-        if(update.success){
-          res.status(200).json(update);
-        }else{
-          res.status(500).json(update)
-        }
-
-
-})
-router.patch('/add-seller/:id/:seller',uploadNone.none(),async(req,res,next)=>{
-  const { id,seller}=req.params
-
-
-      const update = await sale.updateOneSeller(id,seller);
-      if(update.success){
-        res.status(200).json(update);
-      }else{
-        res.status(500).json(update)
-      }
 
 
 })
-router.delete('/:id',async(req,res,next)=>{
-    const { id } = req.paramsd
+router.patch('/add-seller/:year/:id/:seller',uploadNone.none(),async(req,res,next)=>{
+  const { id,seller,year}=req.params
+  try {
+    const update = await sale.updateOneSeller(id,seller,year);
+    res.status(200).json({
+      success:true,
+      message:'Vendedor actualizado'
+    })
+  } catch (error) {
+    next(error)
+  }
+
+
+
+
+
+})
+router.delete('/:year/:id',async(req,res,next)=>{
+    const { id ,year} = req.paramsd
     try{
-        const deleteCustomer = await sale.delete(id);
-        res.status(200).json(deleteCustomer);
+        const deleteRegister = await sale.delete(id,year);
+        res.status(200).json({
+          success:true,
+          message:'Registro eliminado'
+        });
     }catch(error){
         next(error)
     }
 })
+
+
+
 
 module.exports = router;
 

@@ -7,7 +7,7 @@ const { getAll } = require('firebase/remote-config');
 
 class Payment{
     constructor(){
-        this.collection = 'sales'
+        this.collection = 'saless'
     }
     async create(data){
 

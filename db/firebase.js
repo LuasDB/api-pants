@@ -5,7 +5,7 @@ const server = process.env.URL_SERVER
 
 var admin = require("firebase-admin");
 
-var serviceAccount = require("./../credentials.json");
+var serviceAccount = require("./../credentials_samar.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
