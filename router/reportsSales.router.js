@@ -14,9 +14,15 @@ const report = new ReportsSales();
 
 
 router.post('/',uploadNone.none(),async(req,res)=>{
+  try {
+    const getAll = await report.getAll(req.body)
+    res.status(getAll.status).json(getAll)
+  } catch (error) {
+    res.status(500).json({
+      success:false, message:'Algo salio mal en la consulta'
+    })
+  }
 
-  const getAll = await report.getAll(req.body)
-  res.status(getAll.status).json(getAll)
 
 })
 

@@ -13,18 +13,15 @@ class Payment{
 
 
     }
-    async getAll(user){
+    async getAll(idCliente){
+      console.log(idCliente)
+     try {
+        const getRegisters = await db.collection('saless').get()
+        const notas = getRegisters.docs.flatMap(item => {
+          return item.data().ventas.filter(cliente => cliente.cliente === idCliente)
+        })
 
-      try {
-        const response = await db.collection(this.collection)
-        .where('cliente','==',user)
-        .get()
-        const data = response.docs.map(doc =>({id:doc.id,...doc.data()}))
-        data.sort((a, b) => {
-          // Asumiendo que 'fecha' es un campo de tipo Timestamp de Firestore
-          return a.folio - b.folio;
-      });
-        return { success:true, data:data}
+        return { success:true, data:notas}
 
       } catch (error) {
         return { success:false , message:' No se encontro' + error,id:user}

@@ -13,6 +13,7 @@ const report = new Report();
 router.post('/:id',async(req,res)=>{
     //se destructura el id de los parametros
     console.log('ENDPOINT REPORTS')
+    console.log(req.body)
 
     const {id} = req.params;
     //se destructura starDate y endDate de la consulta en la url
