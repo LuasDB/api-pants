@@ -132,6 +132,24 @@ class Sale{
       return error
     }
   }
+  async getClosed(year){
+    try {
+      console.log('GETALL ->',year)
+      const ventas = await db.collection(this.collection).doc(`sales${year}`).get()
+
+      if(!ventas.exists){
+        return []
+      }
+
+      const respuesta = ventas.data().ventas.filter(venta => venta.status === 'Pagada')
+      console.log(respuesta)
+      return respuesta
+
+    } catch (error) {
+      console.log('[ERROR]',error)
+      return null
+    }
+  }
   async updateOne(id, data,year){
     if(parseFloat(data.adeudo) === 0){
       data['status']='Pagada'

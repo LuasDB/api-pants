@@ -16,10 +16,10 @@ const report = new ReportsSales();
 router.post('/',uploadNone.none(),async(req,res)=>{
   try {
     const getAll = await report.getAll(req.body)
-    res.status(getAll.status).json(getAll)
+    res.status(200).json(getAll)
   } catch (error) {
     res.status(500).json({
-      success:false, message:'Algo salio mal en la consulta'
+      success:false, message:'Algo salio mal en la consulta',error
     })
   }
 

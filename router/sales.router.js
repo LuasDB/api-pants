@@ -46,6 +46,20 @@ router.get('/:year/:id',async(req,res,next)=>{
         next(error)
     }
 })
+router.get('/closed/for/:year',async(req,res,next)=>{
+  const { year } = req.params
+  try{
+      const getOne = await sale.getClosed(year);
+      res.status(200).json(
+        {
+          success:true,
+          data:getOne
+        }
+      );
+  }catch(error){
+      next(error)
+  }
+})
 router.get('/transformar/db',async(req,res)=>{
 
   try {
