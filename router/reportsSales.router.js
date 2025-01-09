@@ -13,6 +13,19 @@ const uploadNone = multer();
 const report = new ReportsSales();
 
 
+
+router.get('/',async(req,res)=>{
+  try {
+    const getAll = await report.getAllOpen(req.body)
+    res.status(200).json(getAll)
+  } catch (error) {
+    res.status(500).json({
+      success:false, message:'Algo salio mal en la consulta',error
+    })
+  }
+
+
+})
 router.post('/',uploadNone.none(),async(req,res)=>{
   try {
     const getAll = await report.getAll(req.body)

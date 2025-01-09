@@ -4,9 +4,6 @@ class ReportsSales{
   constructor(){
     this.collection = 'saless'
   }
-
-
-
   async getAll(data){
 
     try {
@@ -69,6 +66,27 @@ class ReportsSales{
       return { success:false, message:error}
     }
 
+  }
+
+  async getAllOpen(){
+    try {
+      const getSales = await db.collection(this.collection).get()
+      const allSales = getSales.docs.flatMap(item=>{
+        return item.data().ventas.filter(item=> item.status === 'Activo')
+      })
+      const order = allSales.sort((a,b)=>{
+        if (a['fecha'] < b['fecha']) {
+          return -1;
+      }
+      if (a['fecha'] > b['fecha']) {
+          return 1;
+      }
+      return 0;
+      })
+      return { success:true, data:order}
+    }catch (error) {
+    return { success:false, message:error}
+  }
   }
 }
 
